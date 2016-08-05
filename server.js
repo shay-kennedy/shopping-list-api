@@ -2,7 +2,8 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
 
-var Storage = function() {
+var Storage = function(newUser) {
+    //this.username = newUser;
     this.items = [];
     this.id = 0;
 };
@@ -14,21 +15,12 @@ Storage.prototype.add = function(name) {
     return item;
 };
 
-// Storage.prototype.remove = function(idName) {
-//     // Need to match the item clicked on to the item in the list array
-//     // Once item matches, will need to remove that item
-//     // Then return remaining array
-//     var i = this.items.length;
-//     for (var i = 0; i < this.items.length; i++) {
-//         if (this.items[i].id === idName)
-//             this.items.splice(i, 1);
-//     }
-// };
 
 var storage = new Storage();
 storage.add('Broad beans');
 storage.add('Tomatoes');
 storage.add('Peppers');
+
 
 var app = express();
 app.use(express.static('public'));
@@ -45,6 +37,21 @@ app.post('/items', jsonParser, function(request, response) {
     var item = storage.add(request.body.name);
     response.status(201).json(item);
 });
+
+// app.get('/users/:username', jsonParser, function(request, response){
+//     if (!request.body) {
+//         return response.sendStatus(400);
+//     }    
+    
+//     var newUsername = request.params.username;
+//     var storage = new Storage(newUsername);
+//     storage.add('Broadefastaa beans');
+//     storage.add('Tomatatwttoes');
+//     storage.add('Peppatewawwters');
+    
+//     response.status(201).json(storage);
+
+// });
 
 app.delete('/items/:id', jsonParser, function(request, response) {
     if (!request.body) {
