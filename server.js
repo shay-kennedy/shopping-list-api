@@ -14,16 +14,16 @@ Storage.prototype.add = function(name) {
     return item;
 };
 
-Storage.prototype.remove = function(idName) {
-    // Need to match the item clicked on to the item in the list array
-    // Once item matches, will need to remove that item
-    // Then return remaining array
-    var i = this.items.length;
-    for (var i = 0; i < this.items.length; i++) {
-        if (this.items[i].id === idName)
-            this.items.splice(i, 1);
-    }
-};
+// Storage.prototype.remove = function(idName) {
+//     // Need to match the item clicked on to the item in the list array
+//     // Once item matches, will need to remove that item
+//     // Then return remaining array
+//     var i = this.items.length;
+//     for (var i = 0; i < this.items.length; i++) {
+//         if (this.items[i].id === idName)
+//             this.items.splice(i, 1);
+//     }
+// };
 
 var storage = new Storage();
 storage.add('Broad beans');
@@ -52,23 +52,37 @@ app.delete('/items/:id', jsonParser, function(request, response) {
     }
 
     var idName = request.params.id;
-    var i = storage.items.length;
-    // while(i-- > 0) {
-    //     if (storage.items[i].id !== idName) {
-    //          return response.sendStatus(404);
-    //     }
-    // }
-    
-    for (var i = 0; i < storage.items.length; i++) {
-        if (storage.items[i].id == idName) {
-            storage.remove(idName);
-            response.status(201).json;
-            return;
-                }
+
+    for (var index in storage.items){
+      if (storage.items[index].id == idName) {
+        var indexToDelete = storage.items.indexOf(storage.items[index]);
+        storage.items.splice(indexToDelete, 1);
+          response.status(201).json(storage.items);
+          return;
+      }  
     }
-    
     return response.sendStatus(404);
 
+});
+
+
+app.put('/items/:id', jsonParser, function(request, response) {
+    if (!request.body) {
+        return response.sendStatus(400);
+    }
+    
+    var idName = request.params.id;
+
+    for (var index in storage.items){
+      if (storage.items[index].id == idName) {
+          storage.items[idName].name = request.body.name;
+          response.status(201).json;
+          return;
+      }
+    }
+
+    var item = storage.add(request.body.name);
+    response.status(201).json(item);
 });
 
 app.listen(process.env.PORT, process.env.IP);
